@@ -1,0 +1,12 @@
+{
+  "name": "instagram-fetcher",
+  "version": "1.0.0",
+  "main": "fetcher.js",
+  "scripts": {
+    "start": "node fetcher.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.5.0"
+  }
+}
