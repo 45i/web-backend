@@ -7,7 +7,7 @@ app.use(cors({
 }));
 app.get('/resolve-media/:postId', async (req, res) => {
   const postId = req.params.postId;
-  const mediaUrl = `https://www.instagram.com/p/${postId}/media/?size=l`;  // Corrected string interpolation
+  const mediaUrl = `https://instagram.com/p/${postId}/media/`;  // Corrected string interpolation
 
   console.log(`Attempting to fetch media URL: ${mediaUrl}`);  // Corrected string interpolation
   try {
