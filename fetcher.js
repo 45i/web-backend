@@ -1,31 +1,48 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
-const cors = require('cors');
-app.use(cors({
-  origin: 'http://127.0.0.1:3000',  // Specify the allowed origin
-}));
-app.get('/resolve-media/:postId', async (req, res) => {
-  const postId = req.params.postId;
-  const mediaUrl = `https://instagram.com/p/${postId}/media/`;  // Corrected string interpolation
-
-  console.log(`Attempting to fetch media URL: ${mediaUrl}`);  // Corrected string interpolation
+async function resolveAndSetImage(postId) {
   try {
-    const response = await axios.get(mediaUrl, {
+    const response = await fetch('http://127.0.0.1:4000/resolve-media', {
+      method: 'POST',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ postId }), // Sending postId in the body
     });
 
-    console.log(`Redirecting to media URL: ${response.headers.location}`);  // Corrected string interpolation
-    res.redirect(response.request.res.responseUrl); 
-  } catch (error) {
-    console.error(`Error fetching media for postId ${postId}:`, error.response?.data || error.message);
-    res.status(500).json({ error: "Unable to fetch media" });
-  }
-});
+    if (response.ok) {
+      const data = await response.json();
+      const imageUrl = data.resolvedUrl;
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);  // Corrected string interpolation
-});
+      // Create the slide dynamically
+      const slideDiv = document.createElement('div');
+      slideDiv.classList.add('mySlides', 'fade');
+
+      const centerTag = document.createElement('center');
+
+      const imgElement = document.createElement('img');
+      imgElement.src = imageUrl;
+      imgElement.style.maxWidth = '75vh';
+      imgElement.id = 'myImg';
+
+      centerTag.appendChild(imgElement);
+      slideDiv.appendChild(centerTag);
+
+      const textDiv = document.createElement('div');
+      textDiv.classList.add('text');
+      textDiv.innerText = `Post ID: ${postId}`;
+
+      slideDiv.appendChild(textDiv);
+
+      // Append to slideshow container
+      const slideshowContainer = document.querySelector('.slideshow-container');
+      slideshowContainer.appendChild(slideDiv);
+    } else {
+      console.error('Failed to resolve media:', await response.json());
+    }
+  } catch (error) {
+    console.error('Error resolving media:', error);
+  }
+}
+
+// Example usage
+const postIds = ['DCoxW5oyyT7', 'DCCVFOFy_ce']; // List of post IDs
+postIds.forEach(postId => resolveAndSetImage(postId));
