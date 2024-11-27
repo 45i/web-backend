@@ -1,7 +1,9 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
-
+app.use(cors({
+  origin: 'http://127.0.0.1:3000',  // Specify the allowed origin
+}));
 app.get('/resolve-media/:postId', async (req, res) => {
   const postId = req.params.postId;
   const mediaUrl = `https://www.instagram.com/p/${postId}/media/?size=l`;  // Corrected string interpolation
