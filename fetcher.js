@@ -8,9 +8,14 @@ app.get('/resolve-media/:postId', async (req, res) => {
 
   console.log(`Attempting to fetch media URL: ${mediaUrl}`);
   try {
-    const response = await axios.get(mediaUrl, { maxRedirects: 0 });
+    const response = await axios.get(mediaUrl, {
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+  },
+});
+
     console.log(`Redirecting to media URL: ${response.headers.location}`);
-    res.redirect(response.headers.location);
+    res.redirect(response.request.res.responseUrl); 
   } catch (error) {
     console.error(`Error fetching media for postId ${postId}:`, error.response?.data || error.message);
     res.status(500).json({ error: "Unable to fetch media" });
