@@ -3,9 +3,8 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
-app.use(cors({
-  origin: 'http://127.0.0.1:3000', // Specify the allowed origin
-}));
+app.use(cors()); // Allow all origins
+
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.post('/resolve-media', async (req, res) => {
