@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const crypto = require('crypto'); // Ensure this line is at the top of your file
 
 const app = express();
 app.use(cors()); // Allow all origins
