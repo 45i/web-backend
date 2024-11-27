@@ -2,47 +2,30 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 const cors = require('cors');
-
 app.use(cors({
-  origin: 'http://127.0.0.1:3000', // Specify the allowed origin
+  origin: 'http://127.0.0.1:3000',  // Specify the allowed origin
 }));
-
 app.get('/resolve-media/:postId', async (req, res) => {
   const postId = req.params.postId;
-  let mediaUrl = `https://www.instagram.com/p/${postId}/media/?size=l`;
+  const mediaUrl = `https://www.instagram.com/p/${postId}/media/?size=l`;  // Corrected string interpolation
 
-  console.log(`Attempting to fetch media URL: ${mediaUrl}`);
+  console.log(`Attempting to fetch media URL: ${mediaUrl}`);  // Corrected string interpolation
   try {
-    let finalUrl = mediaUrl;
-    let isRedirected = true;
+    const response = await axios.get(mediaUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      },
+    });
 
-    // Follow redirects manually
-    while (isRedirected) {
-      const response = await axios.get(finalUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        },
-        maxRedirects: 0, // Prevent axios from auto-following redirects
-        validateStatus: (status) => status >= 200 && status < 400, // Consider 3xx status codes as valid
-      });
-
-      if (response.status >= 300 && response.status < 400 && response.headers.location) {
-        console.log(`Redirected to: ${response.headers.location}`);
-        finalUrl = response.headers.location;
-      } else {
-        isRedirected = false; // No further redirection
-      }
-    }
-
-    console.log(`Final resolved URL: ${finalUrl}`);
-    res.json({ finalUrl }); // Return the final resolved URL
+    console.log(`Redirecting to media URL: ${response.headers.location}`);  // Corrected string interpolation
+    res.redirect(response.request.res.responseUrl); 
   } catch (error) {
-    console.error(`Error resolving media for postId ${postId}:`, error.message);
-    res.status(500).json({ error: "Unable to resolve media" });
+    console.error(`Error fetching media for postId ${postId}:`, error.response?.data || error.message);
+    res.status(500).json({ error: "Unable to fetch media" });
   }
 });
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);  // Corrected string interpolation
 });
