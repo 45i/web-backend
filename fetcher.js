@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+const cors = require('cors');
 app.use(cors({
   origin: 'http://127.0.0.1:3000',  // Specify the allowed origin
 }));
