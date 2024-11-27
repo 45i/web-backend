@@ -5,7 +5,11 @@ const cors = require('cors');
 const app = express();
 app.use(cors()); // Allow all origins
 
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('base64'); // Generate a unique nonce
+  res.setHeader('Content-Security-Policy', `script-src 'self' 'nonce-${res.locals.nonce}'`);
+  next();
+});
 
 app.post('/resolve-media', async (req, res) => {
   const { postId } = req.body; // Expecting { postId: 'DCoxW5oyyT7' } in request body
